@@ -1,0 +1,11 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="referrer" content="strict-origin-when-cross-origin"><title>BRP player</title>
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#p,#p iframe{position:fixed;inset:0;width:100%;height:100%;border:0;pointer-events:none}</style></head><body><div id="p"></div>
+<script>
+const q=new URLSearchParams(location.search),VID=q.get('v')||'JzSUgOmP66Q',VOL=+(q.get('vol')||35);let muted=q.get('muted')==='1',p;
+function send(o){o.src='brp-player';parent.postMessage(o,'*')}
+window.onYouTubeIframeAPIReady=()=>{p=new YT.Player('p',{videoId:VID,playerVars:{autoplay:1,mute:muted?1:0,controls:0,loop:1,playlist:VID,rel:0,playsinline:1,origin:location.origin},
+ events:{onReady:e=>{e.target.setVolume(VOL);muted?e.target.mute():e.target.unMute();e.target.playVideo();send({state:'ready'})},
+ onStateChange:e=>{if(e.data===1)send({state:'playing'})},onError:e=>send({state:'error',code:e.data})}})};
+addEventListener('message',m=>{const c=(m.data||{}).cmd;if(!p||!c)return;if(c==='mute')p.mute();if(c==='unmute'){p.unMute();p.setVolume(VOL);p.playVideo()}});
+const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s);
+</script></body></html>
